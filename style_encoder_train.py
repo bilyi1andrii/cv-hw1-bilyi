@@ -582,6 +582,53 @@ class LineListIO(object):
                 #f.write(unicode(l) + '\n')   Python 2
                 f.write(l + '\n')
 
+import pandas as pd
+import os
+
+class UkrainianDataset(WordLineDataset):
+    def __init__(self, basefolder, subset, segmentation_level, fixed_size, transforms):
+        super().__init__(basefolder, subset, segmentation_level, fixed_size, transforms)
+        self.setname = 'Ukrainian'
+        self.subset = subset
+
+        if subset == 'train':
+            self.split_file = f'{self.basefolder}/train_split.csv'
+        else:
+            self.split_file = f'{self.basefolder}/val_split.csv'
+
+        self.img_folder = f'{self.basefolder}/lines'
+
+        super().__finalize__()
+
+    def main_loader(self, subset, segmentation_level) -> list:
+
+        df = pd.read_csv(self.split_file)
+        data = []
+
+        for count, (index_label, row) in enumerate(df.iterrows()):
+            if count % 2000 == 0:
+                print(f'Loading {subset} images: [{count}/{len(df)}]')
+
+            img_name = str(row['filename'])
+            transcr = str(row['transcription'])
+
+            writer_name = '-'.join(img_name.split('-')[:2])
+
+            img_path = os.path.join(self.img_folder, img_name)
+
+            try:
+                img = Image.open(img_path).convert('RGB')
+                if img.height < 64 and img.width < 256:
+                    img = img
+                else:
+                    img = image_resize_PIL(img, height=img.height // 2)
+
+                data.append((img, transcr, writer_name, img_path))
+            except Exception as e:
+                continue
+
+        return data
+
 
 class IAMDataset_style(WordLineDataset):
     def __init__(self, basefolder, subset, segmentation_level, fixed_size, transforms):
@@ -1180,7 +1227,33 @@ def main():
             print('No validation data')
             
         style_classes = 339
-    
+    elif args.dataset == 'ukrainian':
+        myDataset = UkrainianDataset
+        dataset_folder = './ukrainian_data'
+
+        train_transform = transforms.Compose([
+                            transforms.Resize((64, 256)),
+                            transforms.ToTensor(),
+                            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+                            ])
+
+        val_transform = transforms.Compose([
+                            transforms.Resize((64, 256)),
+                            transforms.ToTensor(),
+                            transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
+                            ])
+
+        print("Loading fixed training split...")
+        train_data = myDataset(dataset_folder, 'train', 'line', fixed_size=(64, 256), transforms=train_transform)
+
+        print("Loading fixed validation split...")
+        val_data = myDataset(dataset_folder, 'val', 'line', fixed_size=(64, 256), transforms=val_transform)
+
+        train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True, num_workers=2)
+        val_loader = DataLoader(val_data, batch_size=args.batch_size, shuffle=False, num_workers=2)
+
+        style_classes = train_data.wclasses
+        print(f"Detected {style_classes} unique writer styles.")
     else:
         print('You need to add your own dataset and define the number of style classes!!!')
     
