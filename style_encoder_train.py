@@ -596,7 +596,7 @@ class UkrainianDataset(WordLineDataset):
         else:
             self.split_file = f'{self.basefolder}/val_split.csv'
 
-        self.img_folder = f'{self.basefolder}/lines'
+        self.img_folder = f'{self.basefolder}/lines/lines'
 
         super().__finalize__()
 
