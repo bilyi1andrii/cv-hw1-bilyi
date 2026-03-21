@@ -612,7 +612,7 @@ class UkrainianDataset(WordLineDataset):
             img_name = str(row['filename'])
             transcr = str(row['transcription'])
 
-            writer_name = '-'.join(img_name.split('-')[:2])
+            writer_name = img_name.split('-')[2]
 
             img_path = os.path.join(self.img_folder, img_name)
 
@@ -625,10 +625,7 @@ class UkrainianDataset(WordLineDataset):
 
                 data.append((img, transcr, writer_name, img_path))
             except Exception as e:
-                print(f"CRASH DETECTED on {img_name}: {e}")
-                print(f"Expected path: {img_path}")
-                break
-
+                continue
         return data
 
 
