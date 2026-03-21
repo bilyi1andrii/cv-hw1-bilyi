@@ -430,10 +430,10 @@ class WordLineDataset(Dataset):
         
         char_tokens = [self.character_classes.index(c) for c in transcr]
         #print('char_tokens before', char_tokens)
-        pad_token = 79 
+        pad_token = len(self.character_classes) - 1 
         
-        #padding_length = self.max_transcr_len - len(char_tokens)
-        padding_length = 95 - len(char_tokens)
+        # Use the actual max length of the dataset
+        padding_length = self.max_transcr_len - len(char_tokens)
         char_tokens.extend([pad_token] * padding_length)
         
         #char_tokens += [pad_token] * (self.max_transcr_len - len(char_tokens))
