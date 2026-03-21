@@ -1189,7 +1189,7 @@ def main():
     
     if args.model == 'mobilenetv2_100':
         print('Using mobilenetv2_100')
-        model = ImageEncoder(model_name='mobilenetv2_100', num_classes=style_classes, pretrained=True, trainable=True)
+        model = Mixed_Encoder(model_name='mobilenetv2_100', num_classes=style_classes, pretrained=True, trainable=True)
         print('Number of model parameters: {}'.format(sum([p.data.nelement() for p in model.parameters()])))
         if args.pretrained == True:
             
@@ -1204,7 +1204,7 @@ def main():
         
     if args.model == 'resnet18':
         print('Using resnet18')
-        model = ImageEncoder(model_name=args.model, num_classes=style_classes, pretrained=True, trainable=True)
+        model = Mixed_Encoder(model_name=args.model, num_classes=style_classes, pretrained=True, trainable=True)
         print('Model loaded')
         #change layer to have 1 channel instead of 3
         #model.model.conv1 = nn.Conv2d(1, 64, kernel_size=7, stride=2, padding=3, bias=False)
