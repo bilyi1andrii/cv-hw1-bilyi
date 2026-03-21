@@ -346,8 +346,8 @@ class WordLineDataset(Dataset):
             # Handle the case where there are fewer than 5 matching images (if needed)
             #print("Not enough matching images with writer ID", wid)
             positive_samples_ = [p for p in self.data if p[2] == wid]
-            #print('len positive samples', len(positive_samples_), 'wid', wid)
-            random_samples_ = random.sample(positive_samples_, k=5)
+            # Use random.choices to allow duplicates if the population is too small
+            random_samples_ = random.choices(positive_samples_, k=5)
             # Retrieve the corresponding images
             style_images = [i[0] for i in random_samples_]
 
