@@ -601,6 +601,9 @@ class UkrainianDataset(WordLineDataset):
         super().__finalize__()
 
     def main_loader(self, subset, segmentation_level) -> list:
+        meta_df = pd.read_csv(f'{self.basefolder}/METAFILE.tsv', sep='\t')
+        all_authors = sorted(list(set([str(row['filename']).split('-')[2] for _, row in meta_df.iterrows()])))
+        author_to_id = {author: idx for idx, author in enumerate(all_authors)}
 
         df = pd.read_csv(self.split_file)
         data = []
@@ -610,9 +613,11 @@ class UkrainianDataset(WordLineDataset):
                 print(f'Loading {subset} images: [{count}/{len(df)}]')
 
             img_name = str(row['filename'])
-            transcr = str(row['transcription'])
+            transcr = str(row['transcription']).strip()
 
-            writer_name = img_name.split('-')[2]
+            writer_str = img_name.split('-')[2]
+
+            writer_name = author_to_id[writer_str]
 
             img_path = os.path.join(self.img_folder, img_name)
 
@@ -626,6 +631,7 @@ class UkrainianDataset(WordLineDataset):
                 data.append((img, transcr, writer_name, img_path))
             except Exception as e:
                 continue
+
         return data
 
 
