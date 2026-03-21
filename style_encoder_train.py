@@ -1143,12 +1143,14 @@ def main():
         aug_transforms = [lambda x: affine_transformation(x, s=.1)]
         
         train_transform = transforms.Compose([
+                            transforms.Resize((64, 256)),
                             #transforms.RandomHorizontalFlip(),
                             transforms.ToTensor(),
                             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)) #transforms.Normalize((0.5,), (0.5,)),  #
                             ])
         
         val_transform = transforms.Compose([
+                            transforms.Resize((64, 256)),
                             transforms.ToTensor(),
                             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5)) #transforms.Normalize((0.5,), (0.5,)),  #
                             ])
