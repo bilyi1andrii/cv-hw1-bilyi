@@ -625,7 +625,9 @@ class UkrainianDataset(WordLineDataset):
 
                 data.append((img, transcr, writer_name, img_path))
             except Exception as e:
-                continue
+                print(f"CRASH DETECTED on {img_name}: {e}")
+                print(f"Expected path: {img_path}")
+                break
 
         return data
 
