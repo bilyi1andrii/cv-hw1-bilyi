@@ -586,8 +586,8 @@ import pandas as pd
 import os
 
 class UkrainianDataset(WordLineDataset):
-    def __init__(self, basefolder, subset, segmentation_level, fixed_size, transforms):
-        super().__init__(basefolder, subset, segmentation_level, fixed_size, transforms)
+    def __init__(self, basefolder, subset, segmentation_level, fixed_size, transforms, character_classes=None):
+        super().__init__(basefolder, subset, segmentation_level, fixed_size, transforms, character_classes)
         self.setname = 'Ukrainian'
         self.subset = subset
 
@@ -613,7 +613,7 @@ class UkrainianDataset(WordLineDataset):
                 print(f'Loading {subset} images: [{count}/{len(df)}]')
 
             img_name = str(row['filename'])
-            transcr = str(row['transcription']).strip()
+            transcr = str(row['transcription']).replace('\t', ' ').replace('\n', ' ').replace('\r', '').strip()
 
             writer_str = img_name.split('-')[2]
 
@@ -1248,11 +1248,18 @@ def main():
                             transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))
                             ])
 
+        with open(f'{dataset_folder}/alphabet.txt', 'r', encoding='utf-8') as f:
+            char_classes = [line.replace('\n', '').replace('\r', '') for line in f.readlines()]
+            char_classes = [c for c in char_classes if c]
+
+        if ' ' not in char_classes:
+            char_classes.append(' ')
+
         print("Loading fixed training split...")
-        train_data = myDataset(dataset_folder, 'train', 'line', fixed_size=(64, 256), transforms=train_transform)
+        train_data = myDataset(dataset_folder, 'train', 'line', fixed_size=(64, 256), transforms=train_transform, character_classes=char_classes)
 
         print("Loading fixed validation split...")
-        val_data = myDataset(dataset_folder, 'val', 'line', fixed_size=(64, 256), transforms=val_transform)
+        val_data = myDataset(dataset_folder, 'val', 'line', fixed_size=(64, 256), transforms=val_transform, character_classes=char_classes)
 
         train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True, num_workers=2)
         val_loader = DataLoader(val_data, batch_size=args.batch_size, shuffle=False, num_workers=2)
