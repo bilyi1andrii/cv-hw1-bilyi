@@ -299,21 +299,23 @@ class WordLineDataset(Dataset):
         
         self.wclasses = len(writer_ids)
         print('Number of writers', self.wclasses)
+        for item in data:
+            transcr = item[1]
+            self.max_transcr_len = max(self.max_transcr_len, len(transcr))
+        print('Max transcription length: {}'.format(self.max_transcr_len))
+
         if self.character_classes is None:
             res = set()
              #compute character classes given input transcriptions
-            for _,transcr,_,_ in tqdm(data):
-                #print('legth transcr = ', len(transcr))
+            for item in data:
+                transcr = item[1]
                 res.update(list(transcr))
-                self.max_transcr_len = max(self.max_transcr_len, len(transcr))
-                #print('self.max_transcr_len', self.max_transcr_len)
                 
             res = sorted(list(res))
-            res.append(' ')
+            if ' ' not in res:
+                res.append(' ')
             print('Character classes: {} ({} different characters)'.format(res, len(res)))
-            print('Max transcription length: {}'.format(self.max_transcr_len))
             self.character_classes = res
-            self.max_transcr_len = self.max_transcr_len
         #END FINALIZE
 
     def __len__(self):
@@ -428,7 +430,7 @@ class WordLineDataset(Dataset):
             img_pos = self.transforms(img_pos)
             img_neg = self.transforms(img_neg)
         
-        char_tokens = [self.character_classes.index(c) for c in transcr]
+        char_tokens = [self.character_classes.index(c) for c in transcr if c in self.character_classes]
         #print('char_tokens before', char_tokens)
         pad_token = len(self.character_classes) - 1 
         
