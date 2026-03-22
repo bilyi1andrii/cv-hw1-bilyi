@@ -1257,6 +1257,8 @@ def main():
         if ' ' not in char_classes:
             char_classes.append(' ')
 
+        print(f"Number of character classes: {len(char_classes)}")
+
         print("Loading fixed training split...")
         train_data = myDataset(dataset_folder, 'train', 'line', fixed_size=(64, 256), transforms=train_transform, character_classes=char_classes)
 
