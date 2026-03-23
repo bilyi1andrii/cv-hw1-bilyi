@@ -1268,9 +1268,9 @@ def main():
         train_loader = DataLoader(train_data, batch_size=args.batch_size, shuffle=True, num_workers=2)
         val_loader = DataLoader(val_data, batch_size=args.batch_size, shuffle=False, num_workers=2)
 
-        # meta_df = pd.read_csv(f'{dataset_folder}/METAFILE.tsv', sep='\t')
-        # style_classes = len(set([str(row['filename']).split('-')[2] for _, row in meta_df.iterrows()]))
-        # print(f"Detected {style_classes} unique writer styles.")
+        meta_df = pd.read_csv(f'{dataset_folder}/METAFILE.tsv', sep='\t')
+        style_classes = len(set([str(row['filename']).split('-')[2] for _, row in meta_df.iterrows()]))
+        print(f"Detected {style_classes} unique writer styles.")
     else:
         print('You need to add your own dataset and define the number of style classes!!!')
     
