@@ -1094,7 +1094,7 @@ def train_mixed(model, train_loader, val_loader, criterion_triplet, criterion_cl
             torch.save(model.state_dict(), f'{args.save_path}/mixed_{args.dataset}_{args.model}.pth')
             print("Saved Best Model!")
         
-        scheduler.step(val_loss)
+        scheduler.step()
         
         
 def train_classification(model, training_data, validation_data, optimizer, scheduler, device, args): #scheduler # after optimizer
@@ -1166,7 +1166,7 @@ def train_triplet(model, train_loader, val_loader, criterion, optimizer, schedul
             torch.save(model.state_dict(), f'{args.save_path}/triplet_{args.dataset}_{args.model}.pth')
             print("Saved Best Model!")
         
-        scheduler.step(val_loss)
+        scheduler.step()
         
         
 
